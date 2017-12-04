@@ -29,6 +29,10 @@ namespace TagsCloud
 			HelpText = "Words count")]
 		public int WordsCount { get; set; }
 
+		[Option('b', "bored", DefaultValue = null,
+			HelpText = "File, containing words which should be exlcuded")]
+		public string BoredWordsFile { get; set; }
+
 		[ParserState]
 		public IParserState LastParserState { get; set; }
 

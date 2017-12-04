@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using Autofac;
 using CommandLine;
@@ -9,7 +10,7 @@ namespace TagsCloud
 	{
 		public static void Main(string[] args)
 		{
-			args = new[] { "-h", "1000", "-w", "1000", "-i", "../../texts/Master.txt", "-o", "result.png"};
+			args = new[] { "-l", "-5", "-h", "2000", "-w", "2000", "-i", "../../texts/Master.txt", "-o", "1.png"};
 			var options = new GenerateOptions();
 			if (!Parser.Default.ParseArguments(args, options))
 				return;
@@ -18,9 +19,11 @@ namespace TagsCloud
 			var fontFamily = FontFamily.GenericMonospace;
 
 			var builder = new ContainerBuilder();
-			builder.RegisterInstance(new TextReader()).As<IWordsReader>();
+			builder.RegisterInstance(new ConsoleErrorInformator()).As<IErrorInformator>();
+			builder.RegisterType<TextReader>().As<IWordsReader>();
 			builder.RegisterInstance(new WordFormatter()).As<IWordFormatter>();
-			builder.RegisterInstance(new WordValidator()).As<IWordValidator>();
+			builder.Register(c => new WordValidator(c.Resolve<IErrorInformator>(), options.BoredWordsFile))
+				.As<IWordValidator>();
 			builder.RegisterType<WordFrequencySaver>().As<IWordFrequencySaver>();
 			builder.RegisterInstance(new FontNormalizer(10, 60)).As<IFontNormalizer>();
 			builder.RegisterInstance(new AcrhimedeCircularCloudLayouter(
@@ -34,7 +37,16 @@ namespace TagsCloud
 			var cloudMaker = containter.Resolve<CloudMaker>();
 			var bitmap = cloudMaker.GenerateImage(options.InputFileName,
 				size, Color.FromName(options.ColorName), fontFamily, options.WordsCount);
-			bitmap.Save(options.OutputFileName, ImageFormat.Png);
+
+			try
+			{
+				bitmap.Save(options.OutputFileName, ImageFormat.Png);
+			}
+			catch(ArgumentException)
+			{
+				containter.Resolve<IErrorInformator>()
+					.PrintErrorMessage("Can't write output file: incorrect argument");
+			}
 		}
 	}
 }

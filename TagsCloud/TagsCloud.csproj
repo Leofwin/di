@@ -44,6 +44,9 @@
     <Reference Include="FluentAssertions.Core, Version=4.17.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentAssertions.4.17.0\lib\net45\FluentAssertions.Core.dll</HintPath>
     </Reference>
+    <Reference Include="NHunspell, Version=1.2.5554.16953, Culture=neutral, PublicKeyToken=1ac793ea843b4366, processorArchitecture=MSIL">
+      <HintPath>..\packages\NHunspell.1.2.5554.16953\lib\net\NHunspell.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
@@ -63,6 +66,8 @@
   <ItemGroup>
     <Compile Include="CircularCloudLayoter\AcrhimedeCircularCloudLayouter.cs" />
     <Compile Include="CloudMaker.cs" />
+    <Compile Include="ErrorInformator\ConsoleErrorInformator.cs" />
+    <Compile Include="ErrorInformator\IErrorInformator.cs" />
     <Compile Include="FontNormalizer\FontNormalizer.cs" />
     <Compile Include="FontNormalizer\IFontNormalizer.cs" />
     <Compile Include="GenerateOptions.cs" />
@@ -89,6 +94,13 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Hunspellx64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Hunspellx86.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

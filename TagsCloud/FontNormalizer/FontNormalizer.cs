@@ -12,6 +12,8 @@
 		}
 		public int GetFontSize(int frequency, int maxFrequency, int minFrequency)
 		{
+			if (maxFrequency == minFrequency)
+				return maxFontSize;
 			var coefficient = (double)(maxFontSize - minFontSize) / (maxFrequency - minFrequency);
 			return (int)(minFontSize + (frequency - minFrequency) * coefficient);
 		}

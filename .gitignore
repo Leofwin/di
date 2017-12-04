@@ -235,3 +235,7 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+/TagsCloud/dict
+/TagsCloud/Hunspellx86.dll
+/TagsCloud/Hunspellx64.dll
+/TagsCloudForm
