@@ -4,11 +4,11 @@ using System.IO;
 
 namespace TagsCloud
 {
-	public class WordValidator : IWordValidator
+	public class WordFilter : IWordFilter
 	{
 		private readonly HashSet<string> boredWords;
 
-		public WordValidator(IErrorInformator errorInformator, string fileWithBoringWordsName)
+		public WordFilter(IErrorInformator errorInformator, string fileWithBoringWordsName)
 		{
 			try
 			{
@@ -33,6 +33,11 @@ namespace TagsCloud
 		public bool IsValidateWord(string word)
 		{
 			return !boredWords.Contains(word) && word.Length > 4;
+		}
+
+		public string GetFormatWord(string word)
+		{
+			return word.ToLower();
 		}
 	}
 }

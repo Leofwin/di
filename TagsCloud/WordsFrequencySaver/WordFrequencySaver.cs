@@ -6,25 +6,22 @@ namespace TagsCloud
 	public class WordFrequencySaver : IWordFrequencySaver
 	{
 		private readonly IWordsReader wordsReader;
-		private readonly IWordFormatter wordsFormatter;
-		private readonly IWordValidator wordsValidator;
+		private readonly IWordFilter wordFilter;
 
 		public WordFrequencySaver(
 			IWordsReader wordsReader, 
-			IWordFormatter wordsFormatter, 
-			IWordValidator wordsValidator)
+			IWordFilter wordFilter)
 		{
 			this.wordsReader = wordsReader;
-			this.wordsFormatter = wordsFormatter;
-			this.wordsValidator = wordsValidator;
+			this.wordFilter = wordFilter;
 		}
 		public Dictionary<string, int> GetWordsFreequency(string fileName, int wordsCountLimit)
 		{
 			var result = new Dictionary<string, int>();
 
 			var words = wordsReader.ReadAllWords(fileName)
-				.Select(word => wordsFormatter.GetFormatWord(word))
-				.Where(word => wordsValidator.IsValidateWord(word));
+				.Select(word => wordFilter.GetFormatWord(word))
+				.Where(word => wordFilter.IsValidateWord(word));
 
 			foreach (var word in words)
 			{

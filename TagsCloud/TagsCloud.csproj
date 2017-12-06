@@ -76,19 +76,17 @@
     <Compile Include="CircularCloudLayoter\ICircularCloudLayouter.cs" />
     <Compile Include="SizeDetector\ISizeDetector.cs" />
     <Compile Include="SizeDetector\SizeDetector.cs" />
-    <Compile Include="WordFormatter\IWordFormatter.cs" />
+    <Compile Include="WordFilter\IWordFilter.cs" />
+    <Compile Include="WordFilter\WordFilter.cs" />
     <Compile Include="WordsFrequencySaver\IWordFrequencySaver.cs" />
-    <Compile Include="WordFormatter\WordFormatter.cs" />
     <Compile Include="WordsReader\IWordsReader.cs" />
     <Compile Include="WordsReader\TextReader.cs" />
-    <Compile Include="WordValidator\IWordValidator.cs" />
     <Compile Include="Geomerty\PointExtension.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Geomerty\RectangleExtension.cs" />
     <Compile Include="WordsFrequencySaver\WordFrequencySaver.cs" />
     <Compile Include="WordsReader\WordsTxtReader.cs" />
-    <Compile Include="WordValidator\WordValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

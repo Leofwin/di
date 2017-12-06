@@ -1,7 +1,9 @@
 ﻿namespace TagsCloud
 {
-	public interface IWordFormatter
+	public interface IWordFilter
 	{
+		bool IsValidateWord(string word);
+
 		string GetFormatWord(string word);
 	}
 }
