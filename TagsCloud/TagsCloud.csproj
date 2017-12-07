@@ -62,6 +62,8 @@
     <Compile Include="Geomerty\ArhimedeSpiral.cs" />
     <Compile Include="Geomerty\Geometry.cs" />
     <Compile Include="CircularCloudLayoter\ICircularCloudLayouter.cs" />
+    <Compile Include="IWriter\ICloudWriter.cs" />
+    <Compile Include="IWriter\ImageCloudWriter.cs" />
     <Compile Include="SizeDetector\ISizeDetector.cs" />
     <Compile Include="SizeDetector\SizeDetector.cs" />
     <Compile Include="WordFilter\IWordFilter.cs" />
