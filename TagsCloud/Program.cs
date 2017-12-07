@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
+﻿using System.Drawing;
 using Autofac;
 using CommandLine;
 
@@ -38,7 +36,12 @@ namespace TagsCloud
 			builder.Register(c => new WordFilter(c.Resolve<IErrorInformator>(), options.BoredWordsFile))
 				.As<IWordFilter>();
 			builder.RegisterType<WordFrequencySaver>().As<IWordFrequencySaver>();
-			builder.RegisterInstance(new FontNormalizer(10, 60)).As<IFontNormalizer>();
+			builder.Register(c => new FontNormalizer(
+					c.Resolve<IErrorInformator>(), 
+					options.MinFontSize, 
+					options.MaxFontSize)
+				)
+				.As<IFontNormalizer>();
 			builder.RegisterInstance(new AcrhimedeCircularCloudLayouter(
 					new Point(options.Width / 2, options.Height / 2))
 				)

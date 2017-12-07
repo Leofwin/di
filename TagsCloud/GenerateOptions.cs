@@ -33,6 +33,14 @@ namespace TagsCloud
 			HelpText = "File, containing words which should be exlcuded")]
 		public string BoredWordsFile { get; set; }
 
+		[Option('u', "max-font", DefaultValue = 60,
+			HelpText = "Max font size")]
+		public int MaxFontSize { get; set; }
+
+		[Option('d', "min-font", DefaultValue = 10,
+			HelpText = "Min font size")]
+		public int MinFontSize { get; set; }
+
 		[ParserState]
 		public IParserState LastParserState { get; set; }
 
