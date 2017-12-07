@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace TagsCloud
@@ -9,8 +11,12 @@ namespace TagsCloud
 		private readonly IFontNormalizer fontNormalizer;
 		private readonly ICircularCloudLayouter tagsCloud;
 		private readonly ISizeDetector sizeDetector;
+		private readonly IWordsReader wordsReader;
+		private readonly IWordFilter wordFilter;
 
 		public CloudMaker(
+			IWordsReader wordsReader,
+			IWordFilter wordFilter,
 			IWordFrequencySaver wordFrequencySaver, 
 			IFontNormalizer fontNormalizer,
 			ICircularCloudLayouter tagsCloud,
@@ -20,40 +26,54 @@ namespace TagsCloud
 			this.fontNormalizer = fontNormalizer;
 			this.tagsCloud = tagsCloud;
 			this.sizeDetector = sizeDetector;
+			this.wordsReader = wordsReader;
+			this.wordFilter = wordFilter;
 		}
 
-		public Bitmap GenerateImage(string input, Size imageSize, 
-			Color fontColor, FontFamily fontFamily, int wordsCount)
+		public Bitmap GenerateImage(Size imageSize, Color fontColor, FontFamily fontFamily,
+			Dictionary<string, int> fontSizeByWords, Dictionary<string, Rectangle> rectanglesByWords)
 		{
-			var frequencyByWords = wordFrequencySaver
-				.GetWordsFreequency(input, wordsCount);
+			var bitmap = new Bitmap(imageSize.Width, imageSize.Height);
+			var brush = new SolidBrush(fontColor);
+			var pen = new Pen(Color.White);
 
-			var maxFrequency = frequencyByWords.Max(p => p.Value);
-			var minFrequency = frequencyByWords.Min(p => p.Value);
+			using (var g = Graphics.FromImage(bitmap)) { 
+				g.FillRectangle(new SolidBrush(Color.White), 0, 0, bitmap.Width, bitmap.Height);
 
-			var fontSizeByWords = frequencyByWords
-				.ToDictionary(p => p.Key, p => fontNormalizer.GetFontSize(p.Value, maxFrequency, minFrequency));
+				foreach (var pair in rectanglesByWords)
+				{
+					g.DrawRectangle(pen, pair.Value);
+					g.DrawString(pair.Key, new Font(fontFamily, fontSizeByWords[pair.Key]), brush, pair.Value);
+				}
+			}
 
+			return bitmap;
+		}
+
+		public Dictionary<string, Rectangle> GetRectanglesByWords(Dictionary<string, int> fontSizeByWords)
+		{
 			var sizesByWords = fontSizeByWords
 				.ToDictionary(p => p.Key, p => sizeDetector.GetWordSize(p.Key, p.Value));
 
 			var rectanglesByWords = sizesByWords
 				.ToDictionary(p => p.Key, p => tagsCloud.PutNextRectangle(p.Value));
+			return rectanglesByWords;
+		}
 
-			var bitmap = new Bitmap(imageSize.Width, imageSize.Height);
-			var brush = new SolidBrush(fontColor);
-			var pen = new Pen(Color.White);
+		public Dictionary<string, int> GetFontSizeByWords(string input, int wordsCount)
+		{
+			var words = wordsReader.ReadAllWords(input)
+				.Select(word => wordFilter.GetFormatWord(word))
+				.Where(word => wordFilter.IsValidateWord(word));
 
-			var g = Graphics.FromImage(bitmap);
-			g.FillRectangle(new SolidBrush(Color.White), 0, 0, bitmap.Width, bitmap.Height);
+			var frequencyByWords = wordFrequencySaver
+				.GetWordsFreequency(words, wordsCount);
 
-			foreach (var pair in rectanglesByWords)
-			{
-				g.DrawRectangle(pen, pair.Value);
-				g.DrawString(pair.Key, new Font(fontFamily, fontSizeByWords[pair.Key]), brush, pair.Value);
-			}
+			var maxFrequency = frequencyByWords.Max(p => p.Value);
+			var minFrequency = frequencyByWords.Min(p => p.Value);
 
-			return bitmap;
+			return frequencyByWords
+				.ToDictionary(p => p.Key, p => fontNormalizer.GetFontSize(p.Value, maxFrequency, minFrequency));
 		}
 	}
 }

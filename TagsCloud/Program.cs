@@ -10,7 +10,6 @@ namespace TagsCloud
 	{
 		public static void Main(string[] args)
 		{
-			args = new[] { "-l", "500", "-h", "2000", "-w", "2000", "-i", "../../texts/Master.txt", "-o", "1.png"};
 			var options = new GenerateOptions();
 			if (!Parser.Default.ParseArguments(args, options))
 				return;
@@ -18,6 +17,30 @@ namespace TagsCloud
 			var size = new Size(options.Width, options.Height);
 			var fontFamily = FontFamily.GenericMonospace;
 
+			var containter = GetContainer(options);
+			var cloudMaker = containter.Resolve<CloudMaker>();
+
+			var fontSizeByWords = cloudMaker.GetFontSizeByWords(options.InputFileName, options.WordsCount);
+
+			var rectanglesByWords = cloudMaker.GetRectanglesByWords(fontSizeByWords);
+
+			using (var bitmap = cloudMaker.GenerateImage(size, Color.FromName(options.ColorName), 
+				fontFamily, fontSizeByWords, rectanglesByWords))
+			{
+				try
+				{
+					bitmap.Save(options.OutputFileName, ImageFormat.Png);
+				}
+				catch (ArgumentException)
+				{
+					containter.Resolve<IErrorInformator>()
+						.PrintErrorMessage("Can't write output file: incorrect argument");
+				}
+			}
+		}
+
+		private static IContainer GetContainer(GenerateOptions options)
+		{
 			var builder = new ContainerBuilder();
 			builder.RegisterInstance(new ConsoleErrorInformator()).As<IErrorInformator>();
 			builder.RegisterType<TextReader>().As<IWordsReader>();
@@ -33,19 +56,7 @@ namespace TagsCloud
 			builder.RegisterType<CloudMaker>();
 
 			var containter = builder.Build();
-			var cloudMaker = containter.Resolve<CloudMaker>();
-			var bitmap = cloudMaker.GenerateImage(options.InputFileName,
-				size, Color.FromName(options.ColorName), fontFamily, options.WordsCount);
-
-			try
-			{
-				bitmap.Save(options.OutputFileName, ImageFormat.Png);
-			}
-			catch(ArgumentException)
-			{
-				containter.Resolve<IErrorInformator>()
-					.PrintErrorMessage("Can't write output file: incorrect argument");
-			}
+			return containter;
 		}
 	}
 }

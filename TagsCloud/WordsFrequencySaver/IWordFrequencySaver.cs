@@ -4,6 +4,6 @@ namespace TagsCloud
 {
 	public interface IWordFrequencySaver
 	{
-		Dictionary<string, int> GetWordsFreequency(string fileName, int wordsCountLimit);
+		Dictionary<string, int> GetWordsFreequency(IEnumerable<string> words, int wordCountLimit);
 	}
 }
