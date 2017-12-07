@@ -56,14 +56,15 @@
     <Compile Include="CloudMaker.cs" />
     <Compile Include="ErrorInformator\ConsoleErrorInformator.cs" />
     <Compile Include="ErrorInformator\IErrorInformator.cs" />
+    <Compile Include="FiltersKeeper\FiltersKeeper.cs" />
     <Compile Include="FontNormalizer\FontNormalizer.cs" />
     <Compile Include="FontNormalizer\IFontNormalizer.cs" />
     <Compile Include="GenerateOptions.cs" />
     <Compile Include="Geomerty\ArhimedeSpiral.cs" />
     <Compile Include="Geomerty\Geometry.cs" />
     <Compile Include="CircularCloudLayoter\ICircularCloudLayouter.cs" />
-    <Compile Include="IWriter\ICloudWriter.cs" />
-    <Compile Include="IWriter\ImageCloudWriter.cs" />
+    <Compile Include="CloudWriter\ICloudWriter.cs" />
+    <Compile Include="CloudWriter\ImageCloudWriter.cs" />
     <Compile Include="SizeDetector\ISizeDetector.cs" />
     <Compile Include="SizeDetector\SizeDetector.cs" />
     <Compile Include="WordFilter\IWordFilter.cs" />

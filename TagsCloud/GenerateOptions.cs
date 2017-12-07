@@ -1,4 +1,5 @@
-﻿using CommandLine;
+﻿using System.Text;
+using CommandLine;
 using CommandLine.Text;
 
 namespace TagsCloud
@@ -41,14 +42,27 @@ namespace TagsCloud
 			HelpText = "Min font size")]
 		public int MinFontSize { get; set; }
 
+		[OptionArray('f', "filters", DefaultValue = new string[0], 
+			HelpText = "Validating filters of words")]
+		public string[] Filters { get; set; }
+
 		[ParserState]
 		public IParserState LastParserState { get; set; }
 
 		[HelpOption]
 		public string GetUsage()
 		{
-			return HelpText.AutoBuild(this,
-				current => HelpText.DefaultParsingErrorsHandler(this, current));
+			var result = new StringBuilder();
+
+			result.Append(HelpText.AutoBuild(this,
+				current => HelpText.DefaultParsingErrorsHandler(this, current)));
+
+			result.AppendLine("-f[--filters] possible arguments:");
+			foreach (var pair in FiltersKeeper.GetFilterDescription())
+				result.AppendLine($"\t{pair.Key} - {pair.Value}");
+			result.AppendLine();
+
+			return result.ToString();
 		}
 	}
 }

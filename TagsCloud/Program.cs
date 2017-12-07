@@ -33,7 +33,10 @@ namespace TagsCloud
 			var builder = new ContainerBuilder();
 			builder.RegisterInstance(new ConsoleErrorInformator()).As<IErrorInformator>();
 			builder.RegisterType<TextReader>().As<IWordsReader>();
-			builder.Register(c => new WordFilter(c.Resolve<IErrorInformator>(), options.BoredWordsFile))
+			builder.Register(c => new WordFilter(
+					c.Resolve<IErrorInformator>(), 
+					options.BoredWordsFile,
+					options.Filters))
 				.As<IWordFilter>();
 			builder.RegisterType<WordFrequencySaver>().As<IWordFrequencySaver>();
 			builder.Register(c => new FontNormalizer(
