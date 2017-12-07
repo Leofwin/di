@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloud", "TagsCloud\Tags
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudTests", "TagsCloudTests\TagsCloudTests.csproj", "{427A584E-DA35-47D2-A695-9AD36A964DD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudForm", "TagsCloudForm\TagsCloudForm.csproj", "{0870094A-5796-4709-B252-68FAD4C7A5BD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,22 +69,6 @@ Global
 		{427A584E-DA35-47D2-A695-9AD36A964DD1}.Release|x64.Build.0 = Release|Any CPU
 		{427A584E-DA35-47D2-A695-9AD36A964DD1}.Release|x86.ActiveCfg = Release|Any CPU
 		{427A584E-DA35-47D2-A695-9AD36A964DD1}.Release|x86.Build.0 = Release|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Debug|ARM.Build.0 = Debug|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Debug|x64.Build.0 = Debug|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Debug|x86.Build.0 = Debug|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Release|ARM.ActiveCfg = Release|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Release|ARM.Build.0 = Release|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Release|x64.ActiveCfg = Release|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Release|x64.Build.0 = Release|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Release|x86.ActiveCfg = Release|Any CPU
-		{0870094A-5796-4709-B252-68FAD4C7A5BD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
