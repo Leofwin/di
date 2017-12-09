@@ -24,7 +24,7 @@ namespace TagsCloud
 			using (var bitmap = cloudMaker.GenerateImage(size, Color.FromName(options.ColorName), 
 				fontFamily, fontSizeByWords, rectanglesByWords))
 			{
-				containter.Resolve<ICloudWriter>().SaveCloud(bitmap);
+				containter.Resolve<ICloudWriter>().SaveCloud(bitmap, options.OutputFileName);
 			}
 		}
 
@@ -51,8 +51,7 @@ namespace TagsCloud
 				.As<ICircularCloudLayouter>();
 			builder.RegisterInstance(new SizeDetector()).As<ISizeDetector>();
 			builder.RegisterType<CloudMaker>();
-			builder.Register(c => new ImageCloudWriter(c.Resolve<IErrorInformator>(), options.OutputFileName))
-				.As<ICloudWriter>();
+			builder.RegisterType<ImageCloudWriter>().As<ICloudWriter>();
 
 			var containter = builder.Build();
 			return containter;

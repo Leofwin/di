@@ -12,21 +12,15 @@ namespace TagsCloud
 
 		public WordFilter(IErrorInformator errorInformator, string fileWithBoringWordsName, string[] filters)
 		{
-			this.filtersToApply = filters.Select(FiltersKeeper.GetFilterByName).ToList();
+			filtersToApply = filters.Select(FiltersKeeper.GetFilterByName).ToList();
 
-			try
-			{
-				boredWords = new HashSet<string>(File.ReadAllLines(fileWithBoringWordsName));
-			}
-			catch (ArgumentException)
-			{
-				errorInformator.PrintInfoMessage("File is not specified. Will check without bored words list");	
-			}
-			catch (FileNotFoundException)
-			{
+			if (string.IsNullOrEmpty(fileWithBoringWordsName))
+				errorInformator.PrintInfoMessage("File is not specified. Will check without bored words list");
+			else if (!File.Exists(fileWithBoringWordsName))
 				errorInformator.PrintInfoMessage($"Can't find a file \"{fileWithBoringWordsName}\". " +
 				                                 "Will check without bored words list");
-			}
+			else
+				boredWords = new HashSet<string>(File.ReadAllLines(fileWithBoringWordsName));
 
 			if (boredWords is null)
 				boredWords = new HashSet<string>();

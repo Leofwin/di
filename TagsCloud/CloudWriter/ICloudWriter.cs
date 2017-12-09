@@ -4,6 +4,6 @@ namespace TagsCloud
 {
 	public interface ICloudWriter
 	{
-		void SaveCloud(Bitmap cloudImage);
+		void SaveCloud(Bitmap cloudImage, string fileName);
 	}
 }

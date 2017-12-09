@@ -17,23 +17,22 @@ namespace TagsCloud
 
 		public List<string> ReadAllWords(string fileName)
 		{
-			try
-			{
-				return File.ReadAllLines(fileName)
-					.SelectMany(line => line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries))
-					.ToList();
-			}
-			catch (FileNotFoundException)
-			{
-				errorInformator.PrintErrorMessage($"Can't find input file \"{fileName}\"");
-				errorInformator.Exit();
-			}
-			catch (ArgumentException)
+			if (string.IsNullOrEmpty(fileName))
 			{
 				errorInformator.PrintErrorMessage("Input file is not specified");
 				errorInformator.Exit();
 			}
-			return null;
+
+			if (!File.Exists(fileName))
+			{
+				errorInformator.PrintErrorMessage($"Can't find input file \"{fileName}\"");
+				errorInformator.Exit();
+			}
+
+			return File.ReadAllLines(fileName)
+				.SelectMany(line => line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries))
+				.ToList();
+
 		}
 	}
 }

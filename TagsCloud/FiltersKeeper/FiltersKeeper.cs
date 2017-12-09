@@ -6,7 +6,7 @@ namespace TagsCloud
 {
 	public class FiltersKeeper
 	{
-		private static readonly Dictionary<string, (Func<string, bool>, string)> allFilters = 
+		private static readonly Dictionary<string, (Func<string, bool>, string)> AllFilters = 
 			new Dictionary<string, (Func<string, bool>, string)>
 			{
 				{"length>4", (w => w.Length > 4, "Words should have more than 4 letters") }
@@ -14,15 +14,15 @@ namespace TagsCloud
 
 		public static Dictionary<string, string> GetFilterDescription()
 		{
-			return allFilters.ToDictionary(p => p.Key, p => p.Value.Item2);
+			return AllFilters.ToDictionary(p => p.Key, p => p.Value.Item2);
 		}
 
 		public static Func<string, bool> GetFilterByName(string name)
 		{
-			if (!allFilters.ContainsKey(name))
+			if (!AllFilters.ContainsKey(name))
 				throw new ArgumentException("This filters doesn't exist");
 
-			return allFilters[name].Item1;
+			return AllFilters[name].Item1;
 		}
 	}
 }

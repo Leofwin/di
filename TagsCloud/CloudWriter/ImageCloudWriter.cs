@@ -7,23 +7,28 @@ namespace TagsCloud
 	public class ImageCloudWriter : ICloudWriter
 	{
 		private readonly IErrorInformator errorInformator;
-		private readonly string outputFileName;
 
-		public ImageCloudWriter(IErrorInformator errorInformator, string fileName)
+		public ImageCloudWriter(IErrorInformator errorInformator)
 		{
 			this.errorInformator = errorInformator;
-			outputFileName = fileName;
 		}
 
-		public void SaveCloud(Bitmap cloudImage)
+		public void SaveCloud(Bitmap cloudImage, string outputFileName)
 		{
+			if (string.IsNullOrEmpty(outputFileName))
+			{
+				errorInformator.PrintErrorMessage("Output file name is incorrect");
+				errorInformator.Exit();
+			}
+
 			try
 			{
 				cloudImage.Save(outputFileName, ImageFormat.Png);
 			}
-			catch (ArgumentException)
+			catch (Exception)
 			{
-				errorInformator.PrintErrorMessage("Can't write output file: incorrect argument");
+				errorInformator.PrintErrorMessage($"Can't write image to file {outputFileName}");
+				errorInformator.Exit();
 			}
 		}
 	}
