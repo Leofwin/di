@@ -156,5 +156,25 @@ namespace TagsCloudTests
 			);
 			fontNormalizer.Received(frequency.Count).GetFontSize(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
 		}
+
+		[Test]
+		public void CloudMaker_GetRectanglesByWords_CountOfMethodCallsShouldBeEqualUniqueWordsCount()
+		{
+			var fontSizes = new Dictionary<string, int>
+			{
+				{"hello", 32 },
+				{"big", 20 },
+				{"world", 16 },
+				{"again", 12 }
+			};
+
+			sizeDetector.GetWordSize("", 0).ReturnsForAnyArgs(new Size(50, 50));
+			tagsCloud.PutNextRectangle(new Size(0, 0)).ReturnsForAnyArgs(new Rectangle(0, 0, 10, 10));
+
+			cloudMaker.GetRectanglesByWords(fontSizes);
+
+			sizeDetector.Received(fontSizes.Count).GetWordSize(Arg.Any<string>(), Arg.Any<int>());
+			tagsCloud.Received(fontSizes.Count).PutNextRectangle(Arg.Any<Size>());
+		}
 	}
 }
