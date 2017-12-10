@@ -91,15 +91,7 @@ namespace TagsCloudTests
 		public void TextReader_IfBadFileWithBoringWordsName_PrintInfoMessage(string fileName)
 		{
 			var textReader = new TextReader(errorInformator);
-
-			try
-			{
-				textReader.ReadAllWords(fileName);
-			}
-			catch (Exception)
-			{
-				// ignored
-			}
+			textReader.ReadAllWords(fileName);
 
 			errorInformator.Received().PrintErrorMessage(Arg.Any<string>());
 			errorInformator.Received().Exit();
@@ -128,6 +120,8 @@ namespace TagsCloudTests
 		[Test]
 		public void CloudMaker_GetFontSizeByWords_CountOfCallsMethodsShouldBeEqualWordsCount()
 		{
+			var cloudMakerWithNormalFrequencySaver = new CloudMaker(
+				wordsReader, wordFilter, new WordFrequencySaver(), fontNormalizer, tagsCloud, sizeDetector);
 			var words = new[] {"hello", "world", "glad", "to", "see", "you" };
 			var frequency = new Dictionary<string, int>
 			{
@@ -142,18 +136,12 @@ namespace TagsCloudTests
 				.Returns(true);
 			fontNormalizer.GetFontSize(10, 10, 10)
 				.ReturnsForAnyArgs(10);
-			wordFrequencySaver.GetWordsFreequency(new string[0], 10)
-				.ReturnsForAnyArgs(frequency);
 
-			cloudMaker.GetFontSizeByWords("test", words.Length);
+			cloudMakerWithNormalFrequencySaver.GetFontSizeByWords("test", words.Length);
 
 			wordsReader.Received(1).ReadAllWords(Arg.Any<string>());
 			wordFilter.Received(words.Length).GetFormatWord(Arg.Any<string>());
 			wordFilter.Received(words.Length).IsValidateWord(Arg.Any<string>());
-			wordFrequencySaver.Received(1).GetWordsFreequency(
-				Arg.Any<IEnumerable<string>>(), 
-				Arg.Any<int>()
-			);
 			fontNormalizer.Received(frequency.Count).GetFontSize(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
 		}
 

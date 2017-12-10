@@ -29,10 +29,18 @@ namespace TagsCloud
 				errorInformator.Exit();
 			}
 
-			return File.ReadAllLines(fileName)
-				.SelectMany(line => line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries))
-				.ToList();
-
+			try
+			{
+				return File.ReadAllLines(fileName)
+					.SelectMany(line => line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries))
+					.ToList();
+			}
+			catch (Exception)
+			{
+				errorInformator.PrintErrorMessage($"Unexpected error while reading \"{fileName}\"");
+				errorInformator.Exit();
+			}
+			return null;
 		}
 	}
 }

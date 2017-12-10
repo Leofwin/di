@@ -63,8 +63,7 @@ namespace TagsCloud
 		{
 			var words = wordsReader.ReadAllWords(input)
 				.Select(word => wordFilter.GetFormatWord(word))
-				.Where(word => wordFilter.IsValidateWord(word))
-				.ToList(); // Необходимо для прохождения одного из тестов
+				.Where(word => wordFilter.IsValidateWord(word));
 
 			var frequencyByWords = wordFrequencySaver
 				.GetWordsFreequency(words, wordsCount);
