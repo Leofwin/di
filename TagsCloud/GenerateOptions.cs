@@ -42,9 +42,13 @@ namespace TagsCloud
 			HelpText = "Min font size")]
 		public int MinFontSize { get; set; }
 
-		[OptionArray('f', "filters", DefaultValue = new string[0], 
+		[OptionArray('v', "validate-filters", DefaultValue = new string[0], 
 			HelpText = "Validating filters of words")]
 		public string[] Filters { get; set; }
+
+		[Option('f', "font", DefaultValue = "GenericMonospace",
+			HelpText = "Font family")]
+		public string FontFamily { get; set; }
 
 		[ParserState]
 		public IParserState LastParserState { get; set; }

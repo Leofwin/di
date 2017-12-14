@@ -29,9 +29,19 @@ namespace TagsCloud
 			this.wordFilter = wordFilter;
 		}
 
-		public Bitmap GenerateImage(Size imageSize, Color fontColor, FontFamily fontFamily,
-			Dictionary<string, int> fontSizeByWords, Dictionary<string, Rectangle> rectanglesByWords)
+		public Result<Bitmap> GenerateImage(Size imageSize, Color fontColor, Result<Font> fontResult,
+			Result<Dictionary<string, int>> fontSizeByWordsResult, 
+			Result<Dictionary<string, Rectangle>> rectanglesByWordsResult)
 		{
+			if (!fontSizeByWordsResult.IsSuccess)
+				return Result.Fail<Bitmap>(fontSizeByWordsResult.Error);
+
+			if (!rectanglesByWordsResult.IsSuccess)
+				return Result.Fail<Bitmap>(rectanglesByWordsResult.Error);
+
+			if (!fontResult.IsSuccess)
+				return Result.Fail<Bitmap>(fontResult.Error);
+
 			var bitmap = new Bitmap(imageSize.Width, imageSize.Height);
 			var brush = new SolidBrush(fontColor);
 			var pen = new Pen(Color.White);
@@ -39,40 +49,53 @@ namespace TagsCloud
 			using (var g = Graphics.FromImage(bitmap)) { 
 				g.FillRectangle(new SolidBrush(Color.White), 0, 0, bitmap.Width, bitmap.Height);
 
-				foreach (var pair in rectanglesByWords)
+				foreach (var pair in rectanglesByWordsResult.Value)
 				{
 					g.DrawRectangle(pen, pair.Value);
-					g.DrawString(pair.Key, new Font(fontFamily, fontSizeByWords[pair.Key]), brush, pair.Value);
+					g.DrawString(
+						pair.Key, 
+						new Font(
+							fontResult.Value.FontFamily, 
+							fontSizeByWordsResult.Value[pair.Key]
+						), 
+						brush, 
+						pair.Value);
 				}
 			}
 
-			return bitmap;
+			return Result.Ok(bitmap);
 		}
 
-		public Dictionary<string, Rectangle> GetRectanglesByWords(Dictionary<string, int> fontSizeByWords)
+		public Result<Dictionary<string, Rectangle>> GetRectanglesByWords(
+			Result<Dictionary<string, int>> fontSizeByWordsResult)
 		{
-			var sizesByWords = fontSizeByWords
-				.ToDictionary(p => p.Key, p => sizeDetector.GetWordSize(p.Key, p.Value));
-
-			var rectanglesByWords = sizesByWords
-				.ToDictionary(p => p.Key, p => tagsCloud.PutNextRectangle(p.Value));
-			return rectanglesByWords;
+			return fontSizeByWordsResult
+				.ToDictionary(p => Result.Ok(p.Key), p => sizeDetector.GetWordSize(p.Key, p.Value))
+				.ToDictionary(p => Result.Ok(p.Key), p => tagsCloud.PutNextRectangle(p.Value));
 		}
 
-		public Dictionary<string, int> GetFontSizeByWords(string input, int wordsCount)
+		public Result<Dictionary<string, int>> GetFontSizeByWords(string input, int wordsCount)
 		{
-			var words = wordsReader.ReadAllWords(input)
-				.Select(word => wordFilter.GetFormatWord(word))
-				.Where(word => wordFilter.IsValidateWord(word));
+			var wordsResult = wordsReader.ReadAllWords(input)
+				.Then(r => r.Value
+					.Select(word => wordFilter.GetFormatWord(word))
+					.Where(word => wordFilter.IsValidateWord(word))
+				);
 
-			var frequencyByWords = wordFrequencySaver
-				.GetWordsFreequency(words, wordsCount);
+			return wordFrequencySaver
+				.GetWordsFreequency(wordsResult, wordsCount)
+				.Then(r => FrequencyToFontSize(r.Value));
+		}
 
-			var maxFrequency = frequencyByWords.Max(p => p.Value);
-			var minFrequency = frequencyByWords.Min(p => p.Value);
+		private Dictionary<string, int> FrequencyToFontSize(Dictionary<string, int> frequncy)
+		{
+			var maxFrequency = frequncy.Max(p => p.Value);
+			var minFrequency = frequncy.Min(p => p.Value);
 
-			return frequencyByWords
-				.ToDictionary(p => p.Key, p => fontNormalizer.GetFontSize(p.Value, maxFrequency, minFrequency));
+			return frequncy.ToDictionary(
+				p => p.Key, 
+				p => fontNormalizer.GetFontSize(p.Value, maxFrequency, minFrequency)
+			);
 		}
 	}
 }

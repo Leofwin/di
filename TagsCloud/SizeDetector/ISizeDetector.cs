@@ -4,6 +4,6 @@ namespace TagsCloud
 {
 	public interface ISizeDetector
 	{
-		Size GetWordSize(string word, int fontSize);
+		Result<Size> GetWordSize(string word, int fontSize);
 	}
 }

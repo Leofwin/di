@@ -4,6 +4,6 @@ namespace TagsCloud
 {
 	public interface IWordsReader
 	{
-		List<string> ReadAllWords(string fileName);
+		Result<List<string>> ReadAllWords(string fileName);
 	}
 }

@@ -6,29 +6,22 @@ namespace TagsCloud
 {
 	public class ImageCloudWriter : ICloudWriter
 	{
-		private readonly IErrorInformator errorInformator;
-
-		public ImageCloudWriter(IErrorInformator errorInformator)
+		public Result<None> SaveCloud(Result<Bitmap> cloudImageResult, string outputFileName)
 		{
-			this.errorInformator = errorInformator;
-		}
+			if (!cloudImageResult.IsSuccess)
+				return Result.Fail<None>(cloudImageResult.Error);
 
-		public void SaveCloud(Bitmap cloudImage, string outputFileName)
-		{
 			if (string.IsNullOrEmpty(outputFileName))
-			{
-				errorInformator.PrintErrorMessage("Output file name is incorrect");
-				errorInformator.Exit();
-			}
+				return Result.Fail<None>("Output file name is incorrect");
 
 			try
 			{
-				cloudImage.Save(outputFileName, ImageFormat.Png);
+				cloudImageResult.Value.Save(outputFileName, ImageFormat.Png);
+				return Result.Ok(new None());
 			}
 			catch (Exception)
 			{
-				errorInformator.PrintErrorMessage($"Can't write image to file {outputFileName}");
-				errorInformator.Exit();
+				return Result.Fail<None>($"Can't write image to file {outputFileName}");
 			}
 		}
 	}

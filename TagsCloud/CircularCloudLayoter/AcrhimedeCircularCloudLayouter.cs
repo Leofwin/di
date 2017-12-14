@@ -24,10 +24,10 @@ namespace TagsCloud
 			spiral = new ArhimedeSpiral(deltaAngle, spiralCoefficient, center);
 		}
 
-		public Rectangle PutNextRectangle(Size rectangleSize)
+		public Result<Rectangle> PutNextRectangle(Size rectangleSize)
 		{
 			if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-				throw new ArgumentException();
+				return Result.Fail<Rectangle>("Incorrect rectangle size");
 
 			var result = Rectangles.Count == 0 
 				? Geometry.CreateRectangle(center, rectangleSize)
@@ -39,7 +39,7 @@ namespace TagsCloud
 
 			RectanglesSquare += rectangleSize.Width * rectangleSize.Height;
 			Rectangles.Add(result);
-			return result;
+			return Result.Ok(result);
 		}
 
 		private Rectangle GetNearestUnintersectedRectangleOnSpiral(Size rectangleSize)

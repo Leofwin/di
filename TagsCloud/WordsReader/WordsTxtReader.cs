@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -6,28 +7,22 @@ namespace TagsCloud
 {
 	public class WordsTxtReader : IWordsReader
 	{
-		private readonly IErrorInformator errorInformator;
-
-		public WordsTxtReader(IErrorInformator errorInformator)
-		{
-			this.errorInformator = errorInformator;
-		}
-
-		public List<string> ReadAllWords(string fileName)
+		public Result<List<string>> ReadAllWords(string fileName)
 		{
 			if (string.IsNullOrEmpty(fileName))
-			{
-				errorInformator.PrintErrorMessage("Input file is not specified");
-				errorInformator.Exit();
-			}
+				return Result.Fail<List<string>>("Input file is not specified");
 
 			if (!File.Exists(fileName))
-			{
-				errorInformator.PrintErrorMessage($"Can't find input file \"{fileName}\"");
-				errorInformator.Exit();
-			}
+				return Result.Fail<List<string>>($"Can't find input file \"{fileName}\"");
 
-			return File.ReadAllLines(fileName).ToList();
+			try
+			{
+				return Result.Ok(File.ReadAllLines(fileName).ToList());
+			}
+			catch (Exception e)
+			{
+				return Result.Fail<List<string>>($"Unexpected error while reading \"{fileName}\". {e.Message}");
+			}
 		}
 	}
 }

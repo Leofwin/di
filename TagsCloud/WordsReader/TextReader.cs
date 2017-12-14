@@ -7,40 +7,27 @@ namespace TagsCloud
 {
 	public class TextReader : IWordsReader
 	{
-		private readonly IErrorInformator errorInformator;
 		private readonly char[] delimiters = { ' ', ',', '.', '!', '?', ':', ';', '-', '"', '\'' };
 
-		public TextReader(IErrorInformator errorInformator)
-		{
-			this.errorInformator = errorInformator;
-		}
-
-		public List<string> ReadAllWords(string fileName)
+		public Result<List<string>> ReadAllWords(string fileName)
 		{
 			if (string.IsNullOrEmpty(fileName))
-			{
-				errorInformator.PrintErrorMessage("Input file is not specified");
-				errorInformator.Exit();
-			}
+				return Result.Fail<List<string>>("Input file is not specified");
 
 			if (!File.Exists(fileName))
-			{
-				errorInformator.PrintErrorMessage($"Can't find input file \"{fileName}\"");
-				errorInformator.Exit();
-			}
+				return Result.Fail<List<string>>($"Can't find input file \"{fileName}\"");
 
 			try
 			{
-				return File.ReadAllLines(fileName)
+				var words = File.ReadAllLines(fileName)
 					.SelectMany(line => line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries))
 					.ToList();
+				return Result.Ok(words);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				errorInformator.PrintErrorMessage($"Unexpected error while reading \"{fileName}\"");
-				errorInformator.Exit();
+				return Result.Fail<List<string>>($"Unexpected error while reading \"{fileName}\". {e.Message}");
 			}
-			return null;
 		}
 	}
 }

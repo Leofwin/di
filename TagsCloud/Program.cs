@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using Autofac;
 using CommandLine;
 
@@ -13,34 +14,32 @@ namespace TagsCloud
 				return;
 
 			var size = new Size(options.Width, options.Height);
-			var fontFamily = FontFamily.GenericMonospace;
+			var fontResult = Result.Of(() => new FontConverter().ConvertFromString(options.FontFamily) as Font);
 
 			var containter = GetDiContainer(options);
 			var cloudMaker = containter.Resolve<CloudMaker>();
 
-			var fontSizeByWords = cloudMaker.GetFontSizeByWords(options.InputFileName, options.WordsCount);
-			var rectanglesByWords = cloudMaker.GetRectanglesByWords(fontSizeByWords);
+			var fontSizeByWordsResult = cloudMaker.GetFontSizeByWords(options.InputFileName, options.WordsCount);
+			var rectanglesByWordsResult = cloudMaker.GetRectanglesByWords(fontSizeByWordsResult);
 
-			using (var bitmap = cloudMaker.GenerateImage(size, Color.FromName(options.ColorName), 
-				fontFamily, fontSizeByWords, rectanglesByWords))
-			{
-				containter.Resolve<ICloudWriter>().SaveCloud(bitmap, options.OutputFileName);
-			}
+			var bitmapResult = cloudMaker.GenerateImage(size, Color.FromName(options.ColorName),
+				fontResult, fontSizeByWordsResult, rectanglesByWordsResult);
+
+			var saveResult = containter.Resolve<ICloudWriter>().SaveCloud(bitmapResult, options.OutputFileName);
+
+			Console.WriteLine(!saveResult.IsSuccess ? saveResult.Error : "Successfully done!");
 		}
 
 		private static IContainer GetDiContainer(GenerateOptions options)
 		{
 			var builder = new ContainerBuilder();
-			builder.RegisterInstance(new ConsoleErrorInformator()).As<IErrorInformator>();
 			builder.RegisterType<TextReader>().As<IWordsReader>();
-			builder.Register(c => new WordFilter(
-					c.Resolve<IErrorInformator>(), 
+			builder.Register(c => new WordFilter( 
 					options.BoredWordsFile,
 					options.Filters))
 				.As<IWordFilter>();
 			builder.RegisterType<WordFrequencySaver>().As<IWordFrequencySaver>();
 			builder.Register(c => new FontNormalizer(
-					c.Resolve<IErrorInformator>(), 
 					options.MinFontSize, 
 					options.MaxFontSize)
 				)

@@ -72,6 +72,7 @@
     <Compile Include="CircularCloudLayoter\ICircularCloudLayouter.cs" />
     <Compile Include="CloudWriter\ICloudWriter.cs" />
     <Compile Include="CloudWriter\ImageCloudWriter.cs" />
+    <Compile Include="Result.cs" />
     <Compile Include="SizeDetector\ISizeDetector.cs" />
     <Compile Include="SizeDetector\SizeDetector.cs" />
     <Compile Include="WordFilter\IWordFilter.cs" />
