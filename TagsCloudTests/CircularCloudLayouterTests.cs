@@ -21,10 +21,12 @@ namespace TagsCloudTests
 
 			for (var i = 0; i < widths.Length; i++)
 			{
-				var actual = tagsCloud.PutNextRectangle(new Size(widths[i], heights[i]));
+				var actualResult = tagsCloud.PutNextRectangle(new Size(widths[i], heights[i]));
+
+				actualResult.IsSuccess.Should().BeTrue();
 				tagsCloud.Rectangles
-					.Except(new[] {actual})
-					.Any(rectangle => rectangle.IntersectsWith(actual))
+					.Except(new[] {actualResult.Value})
+					.Any(rectangle => rectangle.IntersectsWith(actualResult.Value))
 					.Should().BeFalse();
 			}
 		}
@@ -72,22 +74,24 @@ namespace TagsCloudTests
 			var tagsCloud = new AcrhimedeCircularCloudLayouter(new Point(centerX, centerY));
 			var expected = new Rectangle(expectedX, expectedY, width, height);
 
-			var actual = tagsCloud.PutNextRectangle(new Size(width, height));
+			var actualResult = tagsCloud.PutNextRectangle(new Size(width, height));
 
-			actual.Should().Be(expected);
+			actualResult.IsSuccess.Should().BeTrue();
+			actualResult.Value.Should().Be(expected);
 		}
 
 		[TestCase(-20, 3, TestName = "IfWidthIsNegative")]
 		[TestCase(150, -30, TestName = "IfHeightIsNegative")]
 		[TestCase(0, 5, TestName = "IfWidthIsZero")]
 		[TestCase(10, 0, TestName = "IfHeightIsZero")]
-		public void PutNextRectangle_IfIncorrectSize_Exception(int width, int height)
+		public void PutNextRectangle_IfIncorrectSize_ResultFail(int width, int height)
 		{
 			var tagsCloud = new AcrhimedeCircularCloudLayouter(new Point(0, 0));
 
-			Action action = () => tagsCloud.PutNextRectangle(new Size(width, height));
+			var result = tagsCloud.PutNextRectangle(new Size(width, height));
 
-			action.ShouldThrow<ArgumentException>();
+			result.IsSuccess.Should().BeFalse();
+			result.Error.Should().NotBeNullOrEmpty();
 		}
 	}
 }

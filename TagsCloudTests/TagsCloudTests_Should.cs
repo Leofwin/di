@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using TagsCloud;
@@ -39,62 +40,61 @@ namespace TagsCloudTests
 		[TestCase(5, -10, TestName = "IfMaxSizeIsNegative")]
 		[TestCase(5, 0, TestName = "IfMaxSizeIsZero")]
 		[TestCase(45, 20, TestName = "IfMaxSizeIsZero")]
-		public void FontNormalizer_IfBadFontSizes_PrintErrorMessageAndExit(int minFontSize, int maxFontSize)
+		public void FontNormalizer_IfBadFontSizes_Exception(int minFontSize, int maxFontSize)
 		{
-			new FontNormalizer(errorInformator, minFontSize, maxFontSize);
-
-			errorInformator.Received().PrintErrorMessage(Arg.Any<string>());
-			errorInformator.Received().Exit();
+			Action action = () => new FontNormalizer(minFontSize, maxFontSize);
+			action.ShouldThrow<ArgumentException>();
 		}
 
 		[TestCase("", TestName = "IfEmptyString")]
 		[TestCase(null, TestName = "IfNull")]
-		public void ImageCloudWriter_IncorrectOutputFileName_PrintErrorMessageAndExit(string output)
+		public void ImageCloudWriter_IncorrectOutputFileName_ResultFail(string output)
 		{
-			var imageCloudWriter = new ImageCloudWriter(errorInformator);
-			imageCloudWriter.SaveCloud(new Bitmap(100, 100), output);
+			var imageCloudWriter = new ImageCloudWriter();
+			var result = imageCloudWriter.SaveCloud(Result.Ok(new Bitmap(100, 100)), output);
 
-			errorInformator.Received().PrintErrorMessage(Arg.Any<string>());
-			errorInformator.Received().Exit();
+			result.IsSuccess.Should().BeFalse();
+			result.Error.Should().NotBeNullOrEmpty();
 		}
 
-		[Test]
-		public void ImageCloudWriter_IfNullBitmap_PrintErrorMessageAndExit()
-		{
-			var imageCloudWriter = new ImageCloudWriter(errorInformator);
-			imageCloudWriter.SaveCloud(null, "result.png");
-
-			errorInformator.Received().PrintErrorMessage(Arg.Any<string>());
-			errorInformator.Received().Exit();
-		}
+//		[Test]
+//		public void ImageCloudWriter_IfNullBitmap_ResultFail()
+//		{
+//			var imageCloudWriter = new ImageCloudWriter();
+//			var result = imageCloudWriter.SaveCloud(Result.Ok(default(Bitmap)), "result.png");
+//
+//			result.IsSuccess.Should().BeFalse();
+//			result.Error.Should().NotBeNullOrEmpty();
+//		}
 
 		[TestCase(null, TestName = "IfNull")]
 		[TestCase("abcd", TestName = "IfDosNotContainFilterName")]
 		public void FiltersKeeper_GetFilterByName_IfBadFilterName_Exception(string filter)
 		{
-			Assert.Catch<ArgumentException>(() => FiltersKeeper.GetFilterByName(filter));
+			Action action = () => FiltersKeeper.GetFilterByName(filter);
+			action.ShouldThrow<ArgumentException>();
 		}
+
+//		[TestCase(null, TestName = "IfFileNameIsNull")]
+//		[TestCase("", TestName = "IfEmptyFileName")]
+//		[TestCase("notExistFile.tmp", TestName = "IfFileDoesNotExist")]
+//		public void WordFilter_IfBadFileWithBoringWordsName_PrintInfoMessage(string fileName)
+//		{
+//			new WordFilter(fileName, new string[0]);
+//
+//			errorInformator.Received().PrintInfoMessage(Arg.Any<string>());
+//		}
 
 		[TestCase(null, TestName = "IfFileNameIsNull")]
 		[TestCase("", TestName = "IfEmptyFileName")]
 		[TestCase("notExistFile.tmp", TestName = "IfFileDoesNotExist")]
-		public void WordFilter_IfBadFileWithBoringWordsName_PrintInfoMessage(string fileName)
+		public void TextReader_IfBadFileWithBoringWordsName_ResultFail(string fileName)
 		{
-			new WordFilter(errorInformator, fileName, new string[0]);
+			var textReader = new TextReader();
+			var result = textReader.ReadAllWords(fileName);
 
-			errorInformator.Received().PrintInfoMessage(Arg.Any<string>());
-		}
-
-		[TestCase(null, TestName = "IfFileNameIsNull")]
-		[TestCase("", TestName = "IfEmptyFileName")]
-		[TestCase("notExistFile.tmp", TestName = "IfFileDoesNotExist")]
-		public void TextReader_IfBadFileWithBoringWordsName_PrintInfoMessage(string fileName)
-		{
-			var textReader = new TextReader(errorInformator);
-			textReader.ReadAllWords(fileName);
-
-			errorInformator.Received().PrintErrorMessage(Arg.Any<string>());
-			errorInformator.Received().Exit();
+			result.IsSuccess.Should().BeFalse();
+			result.Error.Should().NotBeNullOrEmpty();
 		}
 
 		[TestCase(null, TestName = "IfFileNameIsNull")]
@@ -102,19 +102,12 @@ namespace TagsCloudTests
 		[TestCase("notExistFile.tmp", TestName = "IfFileDoesNotExist")]
 		public void WordsTextReader_IfBadFileWithBoringWordsName_PrintInfoMessage(string fileName)
 		{
-			var textReader = new TextReader(errorInformator);
+			var textReader = new TextReader();
 
-			try
-			{
-				textReader.ReadAllWords(fileName);
-			}
-			catch (Exception)
-			{
-				// ignored
-			}
+			var result = textReader.ReadAllWords(fileName);
 
-			errorInformator.Received().PrintErrorMessage(Arg.Any<string>());
-			errorInformator.Received().Exit();
+			result.IsSuccess.Should().BeFalse();
+			result.Error.Should().NotBeNullOrEmpty();
 		}
 
 		[Test]
@@ -129,7 +122,7 @@ namespace TagsCloudTests
 			};
 
 			wordsReader.ReadAllWords(Arg.Any<string>())
-				.Returns(words.ToList());
+				.Returns(Result.Ok(words.ToList()));
 			wordFilter.GetFormatWord(Arg.Any<string>())
 				.Returns("word");
 			wordFilter.IsValidateWord(Arg.Any<string>())
@@ -156,10 +149,10 @@ namespace TagsCloudTests
 				{"again", 12 }
 			};
 
-			sizeDetector.GetWordSize("", 0).ReturnsForAnyArgs(new Size(50, 50));
-			tagsCloud.PutNextRectangle(new Size(0, 0)).ReturnsForAnyArgs(new Rectangle(0, 0, 10, 10));
+			sizeDetector.GetWordSize("", 0).ReturnsForAnyArgs(Result.Ok(new Size(50, 50)));
+			tagsCloud.PutNextRectangle(new Size(0, 0)).ReturnsForAnyArgs(Result.Ok(new Rectangle(0, 0, 10, 10)));
 
-			cloudMaker.GetRectanglesByWords(fontSizes);
+			cloudMaker.GetRectanglesByWords(Result.Ok(fontSizes));
 
 			sizeDetector.Received(fontSizes.Count).GetWordSize(Arg.Any<string>(), Arg.Any<int>());
 			tagsCloud.Received(fontSizes.Count).PutNextRectangle(Arg.Any<Size>());
