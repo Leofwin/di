@@ -18,15 +18,6 @@ namespace TagsCloud
 				boredWords = new HashSet<string>(File.ReadAllLines(fileWithBoringWordsName));
 			else
 				boredWords = new HashSet<string>();
-//			errorInformator.PrintInfoMessage("File is not specified. Will check without bored words list");
-//			else if (!File.Exists(fileWithBoringWordsName))
-//				errorInformator.PrintInfoMessage($"Can't find a file \"{fileWithBoringWordsName}\". " +
-//				                                 "Will check without bored words list");
-//			else
-//				boredWords = new HashSet<string>(File.ReadAllLines(fileWithBoringWordsName));
-
-//			if (boredWords is null)
-//				boredWords = new HashSet<string>();
 		}
 
 		public bool IsValidateWord(string word)

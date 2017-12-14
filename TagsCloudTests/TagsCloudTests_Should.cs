@@ -12,7 +12,6 @@ namespace TagsCloudTests
 	[TestFixture]
 	public class TagsCloudTests_Should
 	{
-		private IErrorInformator errorInformator;
 		private IWordFrequencySaver wordFrequencySaver;
 		private IFontNormalizer fontNormalizer;
 		private ICircularCloudLayouter tagsCloud;
@@ -24,7 +23,6 @@ namespace TagsCloudTests
 		[SetUp]
 		public void SetUp()
 		{
-			errorInformator = Substitute.For<IErrorInformator>();
 			wordFrequencySaver = Substitute.For<IWordFrequencySaver>();
 			fontNormalizer = Substitute.For<IFontNormalizer>();
 			tagsCloud = Substitute.For<ICircularCloudLayouter>();
@@ -57,16 +55,6 @@ namespace TagsCloudTests
 			result.Error.Should().NotBeNullOrEmpty();
 		}
 
-//		[Test]
-//		public void ImageCloudWriter_IfNullBitmap_ResultFail()
-//		{
-//			var imageCloudWriter = new ImageCloudWriter();
-//			var result = imageCloudWriter.SaveCloud(Result.Ok(default(Bitmap)), "result.png");
-//
-//			result.IsSuccess.Should().BeFalse();
-//			result.Error.Should().NotBeNullOrEmpty();
-//		}
-
 		[TestCase(null, TestName = "IfNull")]
 		[TestCase("abcd", TestName = "IfDosNotContainFilterName")]
 		public void FiltersKeeper_GetFilterByName_IfBadFilterName_Exception(string filter)
@@ -74,16 +62,6 @@ namespace TagsCloudTests
 			Action action = () => FiltersKeeper.GetFilterByName(filter);
 			action.ShouldThrow<ArgumentException>();
 		}
-
-//		[TestCase(null, TestName = "IfFileNameIsNull")]
-//		[TestCase("", TestName = "IfEmptyFileName")]
-//		[TestCase("notExistFile.tmp", TestName = "IfFileDoesNotExist")]
-//		public void WordFilter_IfBadFileWithBoringWordsName_PrintInfoMessage(string fileName)
-//		{
-//			new WordFilter(fileName, new string[0]);
-//
-//			errorInformator.Received().PrintInfoMessage(Arg.Any<string>());
-//		}
 
 		[TestCase(null, TestName = "IfFileNameIsNull")]
 		[TestCase("", TestName = "IfEmptyFileName")]
