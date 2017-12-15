@@ -17,12 +17,12 @@ namespace TagsCloud
 			return AllFilters.ToDictionary(p => p.Key, p => p.Value.Item2);
 		}
 
-		public static Func<string, bool> GetFilterByName(string name)
+		public static Result<Func<string, bool>> GetFilterByName(string name)
 		{
 			if (!AllFilters.ContainsKey(name))
-				throw new ArgumentException("This filters doesn't exist");
+				return Result.Fail<Func<string, bool>>("This filter doesn't exist");
 
-			return AllFilters[name].Item1;
+			return Result.Ok(AllFilters[name].Item1);
 		}
 	}
 }

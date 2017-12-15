@@ -55,11 +55,20 @@ namespace TagsCloudTests
 			result.Error.Should().NotBeNullOrEmpty();
 		}
 
-		[TestCase(null, TestName = "IfNull")]
 		[TestCase("abcd", TestName = "IfDosNotContainFilterName")]
-		public void FiltersKeeper_GetFilterByName_IfBadFilterName_Exception(string filter)
+		[TestCase("doesNotExistingFilter", TestName = "IfDosNotContainFilterName")]
+		public void FiltersKeeper_GetFilterByName_IfFilterDoesntExist_ResultFail(string filter)
 		{
-			Action action = () => FiltersKeeper.GetFilterByName(filter);
+			var result = FiltersKeeper.GetFilterByName(filter);
+
+			result.IsSuccess.Should().BeFalse();
+			result.Error.Should().NotBeNullOrEmpty();
+		}
+
+		[Test]
+		public void FiltersKeeper_GetFilterByName_IfNullFilterName_Exception()
+		{
+			Action action = () => FiltersKeeper.GetFilterByName(null);
 			action.ShouldThrow<ArgumentException>();
 		}
 

@@ -12,7 +12,11 @@ namespace TagsCloud
 
 		public WordFilter(string fileWithBoringWordsName, string[] filters)
 		{
-			filtersToApply = filters.Select(FiltersKeeper.GetFilterByName).ToList();
+			filtersToApply = filters
+				.Select(FiltersKeeper.GetFilterByName)
+				.Where(r => r.IsSuccess)
+				.Select(r => r.Value)
+				.ToList();
 
 			if (!string.IsNullOrEmpty(fileWithBoringWordsName) && File.Exists(fileWithBoringWordsName))
 				boredWords = new HashSet<string>(File.ReadAllLines(fileWithBoringWordsName));
