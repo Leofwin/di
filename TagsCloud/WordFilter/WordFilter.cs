@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -19,9 +20,19 @@ namespace TagsCloud
 				.ToList();
 
 			if (!string.IsNullOrEmpty(fileWithBoringWordsName) && File.Exists(fileWithBoringWordsName))
-				boredWords = new HashSet<string>(File.ReadAllLines(fileWithBoringWordsName));
+			{
+				var readResult = ReadBoringWords(fileWithBoringWordsName);
+				boredWords = readResult.IsSuccess 
+					? new HashSet<string>(readResult.Value) 
+					: new HashSet<string>();
+			}
 			else
 				boredWords = new HashSet<string>();
+		}
+
+		private static Result<string[]> ReadBoringWords(string fileName)
+		{
+			return Result.Of(() => File.ReadAllLines(fileName));
 		}
 
 		public bool IsValidateWord(string word)
