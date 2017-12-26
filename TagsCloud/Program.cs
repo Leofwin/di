@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using Autofac;
 using CommandLine;
 
@@ -34,9 +37,9 @@ namespace TagsCloud
 		{
 			var builder = new ContainerBuilder();
 			builder.RegisterType<TextReader>().As<IWordsReader>();
-			builder.Register(c => new WordFilter( 
-					options.BoredWordsFile,
-					options.Filters))
+			builder.Register(c => new WordFilter(
+					ReadBoredWordsFromFile(options.BoredWordsFile),
+					GetFilters(options)))
 				.As<IWordFilter>();
 			builder.RegisterType<WordFrequencySaver>().As<IWordFrequencySaver>();
 			builder.Register(c => new FontNormalizer(
@@ -54,6 +57,33 @@ namespace TagsCloud
 
 			var containter = builder.Build();
 			return containter;
+		}
+
+		private static List<Func<string, bool>> GetFilters(GenerateOptions options)
+		{
+			return options.Filters
+				.Select(FiltersKeeper.GetFilterByName)
+				.Where(r => r.IsSuccess)
+				.Select(r => r.Value)
+				.ToList();
+		}
+
+		private static List<string> ReadBoredWordsFromFile(string fileWithBoringWordsName)
+		{
+			var boredWords = new List<string>();
+			if (!string.IsNullOrEmpty(fileWithBoringWordsName) && File.Exists(fileWithBoringWordsName))
+			{
+				var readResult = ReadBoringWords(fileWithBoringWordsName);
+				if (readResult.IsSuccess)
+					boredWords = new List<string>(readResult.Value);
+			}
+
+			return boredWords;
+		}
+
+		private static Result<string[]> ReadBoringWords(string fileWithBoringWordsName)
+		{
+			return Result.Of(() => File.ReadAllLines(fileWithBoringWordsName));
 		}
 	}
 }

@@ -19,7 +19,7 @@ namespace TagsCloud
 
 		public static Result<Func<string, bool>> GetFilterByName(string name)
 		{
-			if (!AllFilters.ContainsKey(name))
+			if (name == null || !AllFilters.ContainsKey(name))
 				return Result.Fail<Func<string, bool>>("This filter doesn't exist");
 
 			return Result.Ok(AllFilters[name].Item1);
