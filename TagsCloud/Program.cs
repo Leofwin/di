@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Autofac;
+using Autofac.Core;
 using CommandLine;
 
 namespace TagsCloud
@@ -37,20 +39,28 @@ namespace TagsCloud
 		{
 			var builder = new ContainerBuilder();
 			builder.RegisterType<TextReader>().As<IWordsReader>();
-			builder.Register(c => new WordFilter(
-					ReadBoredWordsFromFile(options.BoredWordsFile),
-					GetFilters(options)))
-				.As<IWordFilter>();
+			builder.RegisterType<WordFilter>()
+				.As<IWordFilter>()
+				.WithParameters(new List<Parameter>
+				{
+					new NamedParameter("boredWords", ReadBoredWordsFromFile(options.BoredWordsFile)),
+					new NamedParameter("filters", GetFilters(options))	
+				});
+
 			builder.RegisterType<WordFrequencySaver>().As<IWordFrequencySaver>();
-			builder.Register(c => new FontNormalizer(
-					options.MinFontSize, 
-					options.MaxFontSize)
-				)
-				.As<IFontNormalizer>();
-			builder.RegisterInstance(new AcrhimedeCircularCloudLayouter(
-					new Point(options.Width / 2, options.Height / 2))
-				)
-				.As<ICircularCloudLayouter>();
+			builder.RegisterType<FontNormalizer>()
+				.As<IFontNormalizer>()
+				.WithParameters(new List<Parameter>
+				{
+					new NamedParameter("minFontSize", options.MinFontSize),
+					new NamedParameter("maxFontSize", options.MaxFontSize)
+				});
+
+			builder.RegisterType<AcrhimedeCircularCloudLayouter>()
+				.As<ICircularCloudLayouter>().WithParameter(
+					"center",
+					new Point(options.Width / 2, options.Height / 2)
+				);
 			builder.RegisterInstance(new SizeDetector()).As<ISizeDetector>();
 			builder.RegisterType<CloudMaker>();
 			builder.RegisterType<ImageCloudWriter>().As<ICloudWriter>();

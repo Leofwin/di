@@ -13,8 +13,8 @@ namespace TagsCloud
 
 		public WordFilter(List<string> boredWords, List<Func<string, bool>> filters)
 		{
-			this.boredWords = boredWords;
-			filtersToApply = filters;
+			this.boredWords = new List<string>(boredWords);
+			filtersToApply = new List<Func<string, bool>>(filters);
 		}
 
 		public bool IsValidateWord(string word)

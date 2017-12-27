@@ -63,7 +63,7 @@
     <Compile Include="CloudMaker.cs" />
     <Compile Include="ErrorInformator\ConsoleErrorInformator.cs" />
     <Compile Include="ErrorInformator\IErrorInformator.cs" />
-    <Compile Include="FiltersKeeper\FiltersKeeper.cs" />
+    <Compile Include="FiltersKeeper.cs" />
     <Compile Include="FontNormalizer\FontNormalizer.cs" />
     <Compile Include="FontNormalizer\IFontNormalizer.cs" />
     <Compile Include="GenerateOptions.cs" />
